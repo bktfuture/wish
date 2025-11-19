@@ -263,7 +263,7 @@
 	position: absolute;
 	width: 220px;
 	height: 220px;
-	background-image: url('/note.png');
+	background-image: url('/bluenote.png');
 	background-size: cover;
 	background-position: center;
 	padding: 2.6rem 2.4rem;
@@ -277,7 +277,9 @@
 	font-family: 'Reenie Beanie', 'Shadows Into Light', 'Comic Sans MS', cursive;
 	font-size: 1.4rem;
 	line-height: 1.4;
-	pointer-events: none;
+	pointer-events: auto;
+	cursor: grab;
+	user-select: none;
 }
 
 .hope-note p {

@@ -14,6 +14,7 @@ function App() {
 	const [particles, setParticles] = useState([]); // Array of particle animations for destroyed stars
 	const [hopeInput, setHopeInput] = useState('');
 	const [hopeNotes, setHopeNotes] = useState([]);
+	const [dragState, setDragState] = useState(null);
 
 	useEffect(() => {
 		// Ensure video plays
@@ -314,6 +315,52 @@ function App() {
 		setHopeInput('');
 	};
 
+	const handleNoteMouseDown = (noteId, e) => {
+		e.preventDefault();
+		const note = hopeNotes.find((n) => n.id === noteId);
+		if (!note) return;
+		const startX = e.clientX;
+		const startY = e.clientY;
+		setDragState({
+			noteId,
+			offsetX: startX - note.x,
+			offsetY: startY - note.y,
+		});
+	};
+
+	useEffect(() => {
+		if (!dragState) return;
+
+		const handleMouseMove = (e) => {
+			e.preventDefault();
+			const newX = e.clientX - dragState.offsetX;
+			const newY = e.clientY - dragState.offsetY;
+			setHopeNotes((prev) =>
+				prev.map((note) =>
+					note.id === dragState.noteId
+						? {
+								...note,
+								x: Math.min(Math.max(newX, 0), window.innerWidth - 220),
+								y: Math.min(Math.max(newY, 0), window.innerHeight - 220),
+						  }
+						: note
+				)
+			);
+		};
+
+		const handleMouseUp = () => {
+			setDragState(null);
+		};
+
+		window.addEventListener('mousemove', handleMouseMove);
+		window.addEventListener('mouseup', handleMouseUp);
+
+		return () => {
+			window.removeEventListener('mousemove', handleMouseMove);
+			window.removeEventListener('mouseup', handleMouseUp);
+		};
+	}, [dragState]);
+
 	return (
 		<div className="app-container">
 			{currentPage === 'dark-forest' && (
@@ -409,7 +456,12 @@ function App() {
 						</form>
 					</div>
 					{hopeNotes.map((note) => (
-						<div key={note.id} className="hope-note" style={{ left: `${note.x}px`, top: `${note.y}px` }}>
+						<div
+							key={note.id}
+							className="hope-note"
+							style={{ left: `${note.x}px`, top: `${note.y}px` }}
+							onMouseDown={(e) => handleNoteMouseDown(note.id, e)}
+						>
 							<p>{note.text}</p>
 						</div>
 					))}
