@@ -376,7 +376,7 @@ function App() {
 					<button className={`nav-button ${currentPage === 'hope' ? 'active' : ''}`} onClick={() => setCurrentPage('hope')}>
 						"hope"
 					</button>
-					<button className={`nav-button ${currentPage === 'humanity' ? 'active' : ''}`} onClick={() => setCurrentPage('humanity')}>
+					<button className={`nav-button ${currentPage === 'home' ? 'active' : ''}`} onClick={() => setCurrentPage('home')}>
 						"humanity"
 					</button>
 				</div>
