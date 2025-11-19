@@ -12,6 +12,8 @@ function App() {
 	const [currentPage, setCurrentPage] = useState('home'); // 'home', 'dark-forest', 'hope', 'humanity'
 	const [circles, setCircles] = useState([]); // Array of {id, x, y} for dark forest page
 	const [particles, setParticles] = useState([]); // Array of particle animations for destroyed stars
+	const [hopeInput, setHopeInput] = useState('');
+	const [hopeNotes, setHopeNotes] = useState([]);
 
 	useEffect(() => {
 		// Ensure video plays
@@ -291,6 +293,27 @@ function App() {
 		}
 	}, [currentPage]);
 
+	const handleHopeSubmit = (e) => {
+		e.preventDefault();
+		const text = hopeInput.trim();
+		if (!text) return;
+
+		const noteWidth = 220;
+		const noteHeight = 220;
+		const xMax = Math.max(window.innerWidth - noteWidth, 0);
+		const yMax = Math.max(window.innerHeight - noteHeight, 0);
+
+		const note = {
+			id: Date.now(),
+			text,
+			x: Math.random() * xMax,
+			y: Math.random() * yMax,
+		};
+
+		setHopeNotes((prev) => [...prev, note]);
+		setHopeInput('');
+	};
+
 	return (
 		<div className="app-container">
 			{currentPage === 'dark-forest' && (
@@ -362,6 +385,33 @@ function App() {
 								height: `${particle.size}px`,
 							}}
 						></div>
+					))}
+				</div>
+			)}
+			{currentPage === 'hope' && (
+				<div className="hope-page">
+					<video className="hope-video" autoPlay loop muted playsInline preload="auto">
+						<source src="/earth.mp4" type="video/mp4" />
+						Your browser does not support the video tag.
+					</video>
+					<div className="hope-overlay">
+						<h2 className="hope-question">What is love?</h2>
+						<form className="hope-form" onSubmit={handleHopeSubmit}>
+							<textarea
+								className="hope-input"
+								placeholder="Share your definition..."
+								value={hopeInput}
+								onChange={(e) => setHopeInput(e.target.value)}
+							></textarea>
+							<button type="submit" className="hope-submit">
+								Pin it
+							</button>
+						</form>
+					</div>
+					{hopeNotes.map((note) => (
+						<div key={note.id} className="hope-note" style={{ left: `${note.x}px`, top: `${note.y}px` }}>
+							<p>{note.text}</p>
+						</div>
 					))}
 				</div>
 			)}

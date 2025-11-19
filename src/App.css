@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Shadows+Into+Light&family=Reenie+Beanie&display=swap');
+
 .app-container {
 	position: fixed;
 	top: 0;
@@ -173,6 +175,114 @@
 	image-rendering: pixelated;
 	-webkit-font-smoothing: none;
 	-moz-osx-font-smoothing: unset;
+}
+
+.hope-page {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+.hope-video {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.hope-overlay {
+	position: absolute;
+	top: 5%;
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 1rem 1.5rem;
+	background-color: white;
+	color: black;
+	border-radius: 0;
+	max-width: 320px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.hope-question {
+	font-family: 'Courier New', monospace;
+	color: black;
+	text-transform: none;
+	letter-spacing: 0.05rem;
+	font-size: 1.1rem;
+	font-weight: normal;
+	margin: 0;
+	text-align: center;
+}
+
+.hope-form {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	align-items: center;
+}
+
+.hope-input {
+	width: 260px;
+	height: 80px;
+	background-color: white;
+	color: black;
+	border: 1px solid rgba(0, 0, 0, 0.4);
+	padding: 0.75rem;
+	font-family: 'Courier New', monospace;
+	font-size: 0.9rem;
+	text-transform: none;
+	letter-spacing: 0.03rem;
+	font-weight: normal;
+	resize: none;
+}
+
+.hope-input::placeholder {
+	color: rgba(0, 0, 0, 0.5);
+}
+
+.hope-submit {
+	padding: 0.4rem 1.25rem;
+	background-color: white;
+	color: black;
+	border: 1px solid rgba(0, 0, 0, 0.5);
+	font-family: 'Courier New', monospace;
+	font-size: 0.85rem;
+	text-transform: none;
+	letter-spacing: 0.04rem;
+	font-weight: normal;
+	cursor: pointer;
+}
+
+.hope-note {
+	position: absolute;
+	width: 220px;
+	height: 220px;
+	background-image: url('/note.png');
+	background-size: cover;
+	background-position: center;
+	padding: 2.6rem 2.4rem;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	color: #2a1b0f;
+	font-family: 'Reenie Beanie', 'Shadows Into Light', 'Comic Sans MS', cursive;
+	font-size: 1.4rem;
+	line-height: 1.4;
+	pointer-events: none;
+}
+
+.hope-note p {
+	margin: 0;
+	white-space: pre-wrap;
 }
 
 .top-banner {
