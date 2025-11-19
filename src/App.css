@@ -186,6 +186,23 @@
 	overflow: hidden;
 }
 
+.hope-spawner {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	z-index: 4;
+}
+
+.hope-spawner img {
+	width: 80px;
+	height: auto;
+	display: block;
+}
+
 .hope-video {
 	width: 100%;
 	height: 100%;
@@ -285,6 +302,14 @@
 .hope-note p {
 	margin: 0;
 	white-space: pre-wrap;
+}
+
+.hope-item {
+	position: absolute;
+	background-size: cover;
+	background-position: center;
+	cursor: grab;
+	user-select: none;
 }
 
 .top-banner {

@@ -14,6 +14,7 @@ function App() {
 	const [particles, setParticles] = useState([]); // Array of particle animations for destroyed stars
 	const [hopeInput, setHopeInput] = useState('');
 	const [hopeNotes, setHopeNotes] = useState([]);
+	const [hopeItems, setHopeItems] = useState([]);
 	const [dragState, setDragState] = useState(null);
 
 	useEffect(() => {
@@ -315,16 +316,45 @@ function App() {
 		setHopeInput('');
 	};
 
-	const handleNoteMouseDown = (noteId, e) => {
+	const handleSpawnClick = () => {
+		const assets = [
+			'/lucky_drops/meds.png',
+			'/lucky_drops/tape.png',
+			'/lucky_drops/stamp.png',
+			'/lucky_drops/star.png',
+			'/lucky_drops/price.png',
+			'/lucky_drops/clover.png',
+		];
+		const asset = assets[Math.floor(Math.random() * assets.length)];
+		const minSize = 90;
+		const maxSize = 140;
+		const size = minSize + Math.random() * (maxSize - minSize);
+		const xMax = Math.max(window.innerWidth - size, 0);
+		const yMax = Math.max(window.innerHeight - size, 0);
+		const item = {
+			id: Date.now() + Math.random(),
+			img: asset,
+			x: Math.random() * xMax,
+			y: Math.random() * yMax,
+			width: size,
+			height: size,
+			rotation: Math.random() * 16 - 8,
+		};
+		setHopeItems((prev) => [...prev, item]);
+	};
+
+	const handleDragStart = (kind, id, width, height) => (e) => {
 		e.preventDefault();
-		const note = hopeNotes.find((n) => n.id === noteId);
-		if (!note) return;
-		const startX = e.clientX;
-		const startY = e.clientY;
+		const collection = kind === 'note' ? hopeNotes : hopeItems;
+		const target = collection.find((entry) => entry.id === id);
+		if (!target) return;
 		setDragState({
-			noteId,
-			offsetX: startX - note.x,
-			offsetY: startY - note.y,
+			kind,
+			id,
+			offsetX: e.clientX - target.x,
+			offsetY: e.clientY - target.y,
+			width,
+			height,
 		});
 	};
 
@@ -333,19 +363,14 @@ function App() {
 
 		const handleMouseMove = (e) => {
 			e.preventDefault();
-			const newX = e.clientX - dragState.offsetX;
-			const newY = e.clientY - dragState.offsetY;
-			setHopeNotes((prev) =>
-				prev.map((note) =>
-					note.id === dragState.noteId
-						? {
-								...note,
-								x: Math.min(Math.max(newX, 0), window.innerWidth - 220),
-								y: Math.min(Math.max(newY, 0), window.innerHeight - 220),
-						  }
-						: note
-				)
-			);
+			const newX = Math.min(Math.max(e.clientX - dragState.offsetX, 0), window.innerWidth - dragState.width);
+			const newY = Math.min(Math.max(e.clientY - dragState.offsetY, 0), window.innerHeight - dragState.height);
+
+			if (dragState.kind === 'note') {
+				setHopeNotes((prev) => prev.map((note) => (note.id === dragState.id ? { ...note, x: newX, y: newY } : note)));
+			} else {
+				setHopeItems((prev) => prev.map((item) => (item.id === dragState.id ? { ...item, x: newX, y: newY } : item)));
+			}
 		};
 
 		const handleMouseUp = () => {
@@ -441,6 +466,9 @@ function App() {
 						<source src="/earth.mp4" type="video/mp4" />
 						Your browser does not support the video tag.
 					</video>
+					<button className="hope-spawner" onClick={handleSpawnClick} aria-label="spawn keepsake">
+						<img src="/13.png" alt="Spawn keepsake" />
+					</button>
 					<div className="hope-overlay">
 						<h2 className="hope-question">What is love?</h2>
 						<form className="hope-form" onSubmit={handleHopeSubmit}>
@@ -460,10 +488,25 @@ function App() {
 							key={note.id}
 							className="hope-note"
 							style={{ left: `${note.x}px`, top: `${note.y}px` }}
-							onMouseDown={(e) => handleNoteMouseDown(note.id, e)}
+							onMouseDown={handleDragStart('note', note.id, 220, 220)}
 						>
 							<p>{note.text}</p>
 						</div>
+					))}
+					{hopeItems.map((item) => (
+						<div
+							key={item.id}
+							className="hope-item"
+							style={{
+								left: `${item.x}px`,
+								top: `${item.y}px`,
+								width: `${item.width}px`,
+								height: `${item.height}px`,
+								transform: `rotate(${item.rotation}deg)`,
+								backgroundImage: `url('${item.img}')`,
+							}}
+							onMouseDown={handleDragStart('item', item.id, item.width, item.height)}
+						></div>
 					))}
 				</div>
 			)}
