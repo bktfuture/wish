@@ -237,8 +237,8 @@ function App() {
 				id: `${circleId}-${i}-${Date.now()}`,
 				x: x + (Math.random() - 0.5) * 30,
 				y: y + (Math.random() - 0.5) * 30,
-				vx: (Math.random() - 0.5) * 2,
-				vy: (Math.random() - 0.5) * 2,
+				vx: (Math.random() - 0.5) * 0.8,
+				vy: (Math.random() - 0.5) * 0.8,
 				opacity: 1,
 				size: 3 + Math.random() * 3,
 				createdAt: Date.now(),
@@ -257,7 +257,7 @@ function App() {
 				return prev
 					.map((particle) => {
 						const age = now - particle.createdAt;
-						const lifetime = 2000; // 2 seconds
+						const lifetime = 3500; // slower fade-out
 
 						if (age > lifetime) {
 							return null; // Remove particle
