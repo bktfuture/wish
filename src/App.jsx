@@ -295,10 +295,65 @@ function App() {
 		}
 	}, [currentPage]);
 
+	// Content filter to prevent hate speech, harassment, slurs, and bad words
+	const containsBadWords = (text) => {
+		const badWords = [
+			'cheating',
+			// Hate speech and slurs (common examples - you may want to expand this list)
+			'nigger',
+			'nigga',
+			'nazi',
+			'kkk',
+			'faggot',
+			'fag',
+			'dyke',
+			'tranny',
+			'retard',
+			'retarded',
+			'spastic',
+			'chink',
+			'gook',
+			'jap',
+			'wetback',
+			'kike',
+			'yid',
+			'towelhead',
+			'sandnigger',
+			// Harassment and offensive terms
+			'kill yourself',
+			'kys',
+			'die',
+			'suicide',
+			'rape',
+			'rapist',
+			'molest',
+			// Other offensive terms
+			'bitch',
+			'whore',
+			'slut',
+			'cunt',
+			'asshole',
+			'dickhead',
+			'motherfucker',
+			'dick',
+			'penis',
+			'vagina',
+		];
+
+		const lowerText = text.toLowerCase();
+		return badWords.some((word) => lowerText.includes(word));
+	};
+
 	const handleHopeSubmit = (e) => {
 		e.preventDefault();
 		const text = hopeInput.trim();
 		if (!text) return;
+
+		// Check for bad words - if found, don't create the note
+		if (containsBadWords(text)) {
+			setHopeInput('');
+			return;
+		}
 
 		const noteWidth = 220;
 		const noteHeight = 220;
