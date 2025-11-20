@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import { getRandomQuote } from './quotes';
 import { getRandomStar } from './stars';
+import { db } from './firebase';
+import { collection, addDoc, getDocs, updateDoc, doc, onSnapshot, query, orderBy } from 'firebase/firestore';
 
 function App() {
 	const videoRef = useRef(null);
@@ -295,6 +297,23 @@ function App() {
 		}
 	}, [currentPage]);
 
+	// Load and sync notes from Firestore
+	useEffect(() => {
+		const notesRef = collection(db, 'hopeNotes');
+		const q = query(notesRef, orderBy('createdAt', 'desc'));
+
+		// Real-time listener for notes
+		const unsubscribe = onSnapshot(q, (snapshot) => {
+			const notes = [];
+			snapshot.forEach((doc) => {
+				notes.push({ id: doc.id, ...doc.data() });
+			});
+			setHopeNotes(notes);
+		});
+
+		return () => unsubscribe();
+	}, []);
+
 	// Content filter to prevent hate speech, harassment, slurs, and bad words
 	const containsBadWords = (text) => {
 		const badWords = [
@@ -344,7 +363,7 @@ function App() {
 		return badWords.some((word) => lowerText.includes(word));
 	};
 
-	const handleHopeSubmit = (e) => {
+	const handleHopeSubmit = async (e) => {
 		e.preventDefault();
 		const text = hopeInput.trim();
 		if (!text) return;
@@ -361,14 +380,19 @@ function App() {
 		const yMax = Math.max(window.innerHeight - noteHeight, 0);
 
 		const note = {
-			id: Date.now(),
 			text,
 			x: Math.random() * xMax,
 			y: Math.random() * yMax,
+			createdAt: Date.now(),
 		};
 
-		setHopeNotes((prev) => [...prev, note]);
-		setHopeInput('');
+		// Save to Firestore
+		try {
+			await addDoc(collection(db, 'hopeNotes'), note);
+			setHopeInput('');
+		} catch (error) {
+			console.error('Error adding note:', error);
+		}
 	};
 
 	const handleSpawnClick = () => {
@@ -422,7 +446,14 @@ function App() {
 			const newY = Math.min(Math.max(e.clientY - dragState.offsetY, 0), window.innerHeight - dragState.height);
 
 			if (dragState.kind === 'note') {
-				setHopeNotes((prev) => prev.map((note) => (note.id === dragState.id ? { ...note, x: newX, y: newY } : note)));
+				// Update note position in Firestore
+				const noteRef = doc(db, 'hopeNotes', dragState.id);
+				updateDoc(noteRef, {
+					x: newX,
+					y: newY,
+				}).catch((error) => {
+					console.error('Error updating note position:', error);
+				});
 			} else {
 				setHopeItems((prev) => prev.map((item) => (item.id === dragState.id ? { ...item, x: newX, y: newY } : item)));
 			}
